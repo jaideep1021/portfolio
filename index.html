@@ -1,0 +1,2860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jaideep Manupati — Full-Stack Engineer & ML Researcher</title>
+  <meta name="description" content="Jaideep Manupati — Full-Stack Engineer & ML Researcher. MEng CS @ Virginia Tech. Building distributed backend architectures, high-performance web systems, and intelligent AI pipelines." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET & THEME TOKENS ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Theme: CRT Phosphor Green (Default) */
+      --bg:        #080808;
+      --bg2:       #0e0e0e;
+      --bg3:       #141414;
+      --border:    #1c1c1c;
+      --border2:   #282828;
+      --green:     #00ff41;
+      --green-dim: #00cc33;
+      --green-dk:  #003810;
+      --green-glow: rgba(0, 255, 65, 0.15);
+      --amber:     #ffb700;
+      --red:       #ff3333;
+      --cyan:      #00ffff;
+      --white:     #eeeeee;
+      --gray:      #888888;
+      --gray2:     #444444;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      --scanline-h: 2px;
+    }
+
+    /* Amber VT220 Theme */
+    body.theme-amber {
+      --green:     #ffb000;
+      --green-dim: #d99600;
+      --green-dk:  #3d2800;
+      --green-glow: rgba(255, 176, 0, 0.15);
+      --cyan:      #ff7700;
+    }
+
+    /* Cyber Cyan Theme */
+    body.theme-cyan {
+      --green:     #00f0ff;
+      --green-dim: #00b8c4;
+      --green-dk:  #00363a;
+      --green-glow: rgba(0, 240, 255, 0.15);
+      --amber:     #ff007f;
+    }
+
+    /* Paper Monochrome / Clean Light Mode */
+    body.theme-light {
+      --bg:        #f5f5f0;
+      --bg2:       #eaeae4;
+      --bg3:       #deded6;
+      --border:    #d0d0c6;
+      --border2:   #b8b8ae;
+      --green:     #007a2f;
+      --green-dim: #0d8a39;
+      --green-dk:  #c2e8cb;
+      --green-glow: rgba(0, 122, 47, 0.12);
+      --amber:     #b86500;
+      --red:       #c92a2a;
+      --cyan:      #0b7285;
+      --white:     #181818;
+      --gray:      #555555;
+      --gray2:     #888888;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--green);
+      font-family: var(--font-mono);
+      overflow-x: hidden;
+      cursor: none;
+      position: relative;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* ── MATRIX CANVAS (BACKGROUND) ── */
+    #matrix-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.12;
+      display: block;
+    }
+    body.matrix-off #matrix-canvas { display: none; }
+    body.theme-light #matrix-canvas { opacity: 0.05; }
+
+    /* ── SCANLINE OVERLAY (Static GPU Layer - 0 Repaints) ── */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent calc(var(--scanline-h) * 2 - 1px),
+        rgba(0,0,0,0.18) calc(var(--scanline-h) * 2)
+      );
+      pointer-events: none;
+      z-index: 9998;
+      transform: translateZ(0);
+    }
+    body.theme-light .scanlines {
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent calc(var(--scanline-h) * 2 - 1px),
+        rgba(0,0,0,0.04) calc(var(--scanline-h) * 2)
+      );
+    }
+
+    /* ── VIGNETTE ── */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.85) 100%);
+      pointer-events: none;
+      z-index: 9997;
+      transform: translateZ(0);
+    }
+    body.theme-light .vignette { opacity: 0.15; }
+
+    /* ── MODERN SLEEK CURSOR (DEFAULT) ── */
+    #cursor {
+      position: fixed;
+      width: 28px;
+      height: 28px;
+      border: 1.5px solid var(--green);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999998;
+      top: 0; left: 0;
+      transform: translate(-50%, -50%);
+      transition: width 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                  height 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.15s,
+                  background 0.15s,
+                  opacity 0.2s;
+      opacity: 0.75;
+      will-change: transform;
+    }
+    #cursor-dot {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999999;
+      top: 0; left: 0;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s ease-out, background 0.15s;
+      will-change: transform;
+    }
+
+    #cursor.hover {
+      width: 44px;
+      height: 44px;
+      border-color: var(--amber);
+      background: rgba(255, 176, 0, 0.08);
+      opacity: 1;
+    }
+    #cursor-dot.hover {
+      background: var(--amber);
+      transform: translate(-50%, -50%) scale(1.3);
+    }
+
+    /* Cursor Retro CRT Mode */
+    body.cursor-retro #cursor {
+      width: 18px;
+      height: 18px;
+      border-radius: 0;
+      border: 1.5px solid var(--green);
+      mix-blend-mode: difference;
+      opacity: 1;
+    }
+    body.cursor-retro #cursor-dot {
+      border-radius: 0;
+      width: 4px;
+      height: 4px;
+    }
+    body.cursor-retro #cursor.hover {
+      width: 36px;
+      height: 36px;
+      border-color: var(--amber);
+      transform: translate(-50%, -50%) rotate(45deg);
+      background: transparent;
+    }
+
+    /* Cursor System Native Default Mode */
+    body.cursor-system,
+    body.cursor-system * {
+      cursor: auto !important;
+    }
+    body.cursor-system a,
+    body.cursor-system button,
+    body.cursor-system .ctrl-pill,
+    body.cursor-system .t-chip,
+    body.cursor-system .project-action-link,
+    body.cursor-system .case-study-btn,
+    body.cursor-system .form-btn,
+    body.cursor-system .modal-close,
+    body.cursor-system .modal-body a,
+    body.cursor-system .t-dot {
+      cursor: pointer !important;
+    }
+    body.cursor-system input,
+    body.cursor-system textarea {
+      cursor: text !important;
+    }
+    body.cursor-system #cursor,
+    body.cursor-system #cursor-dot {
+      display: none !important;
+    }
+
+    /* Modal custom cursor coverage (ensures custom cursor renders cleanly inside modals) */
+    body:not(.cursor-system) .modal-backdrop,
+    body:not(.cursor-system) .modal-window,
+    body:not(.cursor-system) .modal-header,
+    body:not(.cursor-system) .modal-body,
+    body:not(.cursor-system) .modal-body *,
+    body:not(.cursor-system) .modal-close,
+    body:not(.cursor-system) .modal-ascii-box {
+      cursor: none !important;
+    }
+
+    /* ── BOOT LOADER ── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 999999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+    }
+    #loader-text {
+      font-size: clamp(0.72rem, 1.3vw, 0.85rem);
+      color: var(--green);
+      letter-spacing: 0.15em;
+    }
+    #loader-bar-wrap {
+      width: clamp(220px, 45vw, 420px);
+      height: 2px;
+      background: var(--border);
+      position: relative;
+    }
+    #loader-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--green);
+      transition: width 0.04s linear;
+      box-shadow: 0 0 12px var(--green);
+    }
+    #loader-pct {
+      font-size: 0.75rem;
+      color: var(--green-dim);
+    }
+    #loader.fade-out {
+      animation: fadeOut 0.5s ease forwards;
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; pointer-events: none; }
+    }
+
+    /* ── NOISE TEXTURE ── */
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9996;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+    }
+
+    /* ── TOP NAV (Hardware Accelerated Layer) ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 3rem;
+      background: rgba(8, 8, 8, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.25s, border-color 0.25s;
+      transform: translateZ(0);
+    }
+    body.theme-light nav {
+      background: rgba(245, 245, 240, 0.94);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .nav-logo {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--green);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+    .nav-logo span { color: var(--amber); }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .ctrl-pill {
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.55rem;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      color: var(--gray);
+      cursor: none;
+      transition: all 0.2s;
+    }
+    .ctrl-pill:hover, .ctrl-pill.active {
+      color: var(--green);
+      border-color: var(--green-dk);
+      background: var(--green-glow);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.75rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-links a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.74rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::before {
+      content: '> ';
+      color: var(--green);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .nav-links a:hover { color: var(--green); }
+    .nav-links a:hover::before { opacity: 1; }
+    .nav-cta {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bg) !important;
+      background: var(--green);
+      padding: 0.45rem 1rem;
+      text-decoration: none;
+      font-weight: 700;
+      transition: background 0.2s, color 0.2s !important;
+    }
+    .nav-cta::before { display: none !important; }
+    .nav-cta:hover { background: var(--amber) !important; }
+
+    /* ── MAIN & CONTENT SECTIONS ── */
+    main { padding-top: 65px; position: relative; z-index: 10; }
+    section { position: relative; }
+
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--green-dim);
+      margin-bottom: 0.75rem;
+    }
+    .section-label::before { content: '// '; color: var(--gray2); }
+
+    .section-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 5rem 3rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3.2vw, 2.3rem);
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+    .section-title .accent { color: var(--green); }
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: calc(100vh - 65px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 3.5rem;
+      padding: 4rem 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-left { max-width: 600px; }
+
+    .hero-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.68rem;
+      color: var(--green-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1.75rem;
+      border: 1px solid var(--border2);
+      padding: 0.35rem 0.75rem;
+      background: rgba(0, 255, 65, 0.03);
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green);
+      animation: blink 1.5s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+    .hero-greeting {
+      font-size: 0.85rem;
+      color: var(--gray);
+      letter-spacing: 0.12em;
+      margin-bottom: 0.4rem;
+    }
+    .hero-name {
+      font-size: clamp(2.6rem, 5vw, 4.4rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--white);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      min-height: 2.1em;
+    }
+    .hero-name .cursor-blink {
+      display: inline-block;
+      width: 4px;
+      height: 0.85em;
+      background: var(--green);
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+    }
+    .hero-tagline {
+      font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+      color: var(--green);
+      margin-bottom: 1.5rem;
+      font-weight: 400;
+    }
+    .hero-tagline .sep { color: var(--gray2); margin: 0 0.5rem; }
+
+    .hero-bio {
+      font-size: clamp(0.82rem, 1.05vw, 0.9rem);
+      color: var(--gray);
+      line-height: 1.85;
+      max-width: 520px;
+      margin-bottom: 2.25rem;
+    }
+    .hero-bio .hi { color: var(--green-dim); }
+
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.6rem;
+      background: var(--green);
+      color: var(--bg);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--amber);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(255,183,0,0.3);
+    }
+    .btn-outline-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.6rem;
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--gray);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline-hero:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .social-strip {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .social-strip a {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--gray2);
+      text-decoration: none;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+    }
+    .social-strip a:hover { color: var(--green); }
+    .social-strip a svg { width: 14px; height: 14px; fill: currentColor; }
+
+    /* ── INTERACTIVE TERMINAL WIDGET ── */
+    .hero-right { position: relative; }
+    .terminal {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      font-size: clamp(0.68rem, 0.88vw, 0.78rem);
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--green-glow);
+    }
+    body.theme-light .terminal {
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1rem;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+    .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .t-dot-r { background: #ff5f56; }
+    .t-dot-y { background: #ffbd2e; }
+    .t-dot-g { background: #27c93f; }
+    .t-title { margin-left: auto; font-size: 0.65rem; color: var(--gray2); letter-spacing: 0.08em; }
+
+    .terminal-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border-bottom: 1px dashed var(--border);
+    }
+    .t-chip {
+      font-size: 0.6rem;
+      padding: 0.2rem 0.5rem;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      color: var(--gray);
+      cursor: none;
+      letter-spacing: 0.05em;
+      transition: all 0.15s;
+    }
+    .t-chip:hover {
+      color: var(--green);
+      border-color: var(--green);
+      background: var(--green-glow);
+    }
+
+    .terminal-body {
+      padding: 1.25rem 1.4rem;
+      line-height: 1.95;
+      min-height: 290px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .t-prompt { color: var(--green); font-weight: 600; }
+    .t-cmd { color: var(--white); }
+    .t-comment { color: var(--gray2); font-style: italic; }
+    .t-key { color: var(--amber); }
+    .t-val { color: var(--cyan); }
+    .t-str { color: #ce9178; }
+    .t-num { color: #b5cea8; }
+    .t-bool { color: #569cd6; }
+    .t-line { display: block; }
+    .t-cursor-blink {
+      display: inline-block;
+      width: 7px; height: 1em;
+      background: var(--green);
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+      margin-left: 2px;
+    }
+
+    /* ── IMPACT METRICS BANNER ── */
+    .metrics-banner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+    }
+    .metric-card {
+      padding: 2.25rem 2rem;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .metric-card:last-child { border-right: none; }
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 2px; height: 0%;
+      background: var(--green);
+      transition: height 0.3s;
+    }
+    .metric-card:hover::before { height: 100%; }
+    .metric-val {
+      font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .metric-val .unit { color: var(--green); font-size: 0.6em; margin-left: 2px; }
+    .metric-label {
+      font-size: 0.68rem;
+      color: var(--gray);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.4;
+    }
+    .metric-sub {
+      font-size: 0.62rem;
+      color: var(--green-dim);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── PROJECTS ── */
+    #projects { border-bottom: 1px solid var(--border); background: var(--bg); }
+    .projects-grid { display: grid; gap: 2.25rem; }
+    .project-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 2.25rem;
+      transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--green);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .project-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 25px var(--green-glow);
+    }
+    body.theme-light .project-card:hover {
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+    }
+    .project-card:hover::before { transform: scaleX(1); }
+
+    .project-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .project-meta { display: flex; flex-direction: column; gap: 0.35rem; }
+    .project-code {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--green-dim);
+      text-transform: uppercase;
+    }
+    .project-name {
+      font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .project-badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .project-badge {
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border: 1px solid var(--amber);
+      color: var(--amber);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-contributor {
+      border-color: var(--green);
+      color: var(--green);
+      background: rgba(0, 255, 65, 0.05);
+    }
+    .badge-private {
+      border-color: var(--gray2);
+      color: var(--gray);
+      border-style: dashed;
+    }
+
+    .project-bullets {
+      margin: 0 0 1.5rem 0;
+      padding: 0;
+      list-style: none;
+    }
+    .project-bullets li {
+      font-size: 0.78rem;
+      color: var(--gray);
+      line-height: 1.75;
+      padding-left: 1.3rem;
+      position: relative;
+      margin-bottom: 0.45rem;
+    }
+    .project-bullets li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--green-dim);
+    }
+
+    /* Project Action Footer */
+    .project-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      padding-top: 1.4rem;
+      border-top: 1px dashed var(--border);
+    }
+    .project-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .tag {
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      color: var(--gray);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .project-card:hover .tag { border-color: var(--green-dk); color: var(--green-dim); }
+
+    .project-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .project-action-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--green);
+      background: rgba(0, 255, 65, 0.06);
+      border: 1px solid var(--green-dk);
+      cursor: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .project-action-link:hover {
+      background: var(--green);
+      color: var(--bg);
+      border-color: var(--green);
+      box-shadow: 0 0 14px var(--green-glow);
+    }
+    .project-action-link svg {
+      width: 13px; height: 13px; fill: currentColor;
+    }
+
+    .project-action-link.live-link {
+      color: #00ff88;
+      border-color: #008f4c;
+      background: rgba(0, 255, 136, 0.08);
+    }
+    .live-pulse {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #00ff88;
+      box-shadow: 0 0 6px #00ff88;
+      animation: blink 1.2s infinite;
+    }
+    .project-action-link.devpost-link {
+      color: #00ffff;
+      border-color: #007780;
+      background: rgba(0, 255, 255, 0.08);
+    }
+    .project-action-link.case-study-btn {
+      color: var(--amber);
+      border-color: #8f6000;
+      background: rgba(255, 183, 0, 0.08);
+      font-family: var(--font-mono);
+    }
+    .project-action-link.case-study-btn:hover {
+      background: var(--amber);
+      color: var(--bg);
+      border-color: var(--amber);
+      box-shadow: 0 0 14px rgba(255, 183, 0, 0.35);
+    }
+
+    .project-action-link.report-link {
+      color: #00e5ff;
+      border-color: #008899;
+      background: rgba(0, 229, 255, 0.08);
+    }
+    .project-action-link.report-link:hover {
+      background: #00e5ff;
+      color: var(--bg);
+      border-color: #00e5ff;
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.35);
+    }
+
+    /* ── LIGHT THEME HIGH-CONTRAST TABS & PROJECT ACTIONS ── */
+    body.theme-light .project-action-link {
+      color: #111111;
+      background: #e4e4dc;
+      border-color: #9e9e90;
+    }
+    body.theme-light .project-action-link:hover {
+      background: #007a2f;
+      color: #ffffff;
+      border-color: #007a2f;
+      box-shadow: 0 2px 8px rgba(0, 122, 47, 0.25);
+    }
+    body.theme-light .project-action-link.live-link {
+      color: #046325;
+      border-color: #046325;
+      background: rgba(4, 99, 37, 0.14);
+      font-weight: 700;
+    }
+    body.theme-light .project-action-link.live-link:hover {
+      background: #046325;
+      color: #ffffff;
+      border-color: #046325;
+    }
+    body.theme-light .live-pulse {
+      background: #046325;
+      box-shadow: 0 0 6px #046325;
+    }
+    body.theme-light .project-action-link.devpost-link {
+      color: #005668;
+      border-color: #005668;
+      background: rgba(0, 86, 104, 0.14);
+      font-weight: 700;
+    }
+    body.theme-light .project-action-link.devpost-link:hover {
+      background: #005668;
+      color: #ffffff;
+      border-color: #005668;
+    }
+    body.theme-light .project-action-link.case-study-btn {
+      color: #8c4200;
+      border-color: #8c4200;
+      background: rgba(140, 66, 0, 0.14);
+      font-weight: 700;
+    }
+    body.theme-light .project-action-link.case-study-btn:hover {
+      background: #8c4200;
+      color: #ffffff;
+      border-color: #8c4200;
+      box-shadow: 0 2px 8px rgba(140, 66, 0, 0.3);
+    }
+    body.theme-light .project-action-link.report-link {
+      color: #005260;
+      border-color: #005260;
+      background: rgba(0, 82, 96, 0.14);
+      font-weight: 700;
+    }
+    body.theme-light .project-action-link.report-link:hover {
+      background: #005260;
+      color: #ffffff;
+      border-color: #005260;
+    }
+    body.theme-light .project-badge {
+      background: rgba(0, 122, 47, 0.15);
+      color: #006020;
+      border-color: #007a2f;
+      font-weight: 700;
+    }
+    body.theme-light .project-badge.badge-contributor {
+      background: rgba(11, 114, 133, 0.15);
+      color: #005260;
+      border-color: #0b7285;
+      font-weight: 700;
+    }
+    body.theme-light .project-code {
+      color: #007a2f;
+      font-weight: 700;
+    }
+    body.theme-light .project-name {
+      color: #111111;
+    }
+    body.theme-light .project-bullets li {
+      color: #2a2a2a;
+    }
+    body.theme-light .tag {
+      background: #deded4;
+      border-color: #b0b0a2;
+      color: #1a1a1a;
+      font-weight: 600;
+    }
+    body.theme-light .ctrl-pill {
+      background: #eaeae0;
+      border-color: #b0b0a2;
+      color: #1a1a1a;
+    }
+    body.theme-light .ctrl-pill:hover,
+    body.theme-light .ctrl-pill.active {
+      background: #007a2f;
+      color: #ffffff;
+      border-color: #007a2f;
+    }
+
+    /* ── SKILLS WITH ANIMATED METERS ── */
+    #skills { border-bottom: 1px solid var(--border); background: var(--bg2); }
+
+    .skills-overview-wrap {
+      margin-bottom: 3.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 2rem;
+    }
+    .skills-overview-title {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 1.5rem;
+    }
+    .skill-meters-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem 3rem;
+    }
+    .skill-meter-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .skill-meter-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--white);
+      letter-spacing: 0.05em;
+    }
+    .skill-meter-pct {
+      color: var(--green);
+      font-weight: 700;
+    }
+    .skill-meter-track {
+      height: 6px;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      overflow: hidden;
+      position: relative;
+    }
+    .skill-meter-fill {
+      height: 100%;
+      background: var(--green);
+      width: 0%;
+      transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .skill-group {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .skill-group:hover { border-color: var(--border2); }
+    .skill-group-title {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .skill-group-title::before { content: '['; color: var(--gray2); }
+    .skill-group-title::after  { content: ']'; color: var(--gray2); }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .skill-tag {
+      font-size: 0.68rem;
+      padding: 0.25rem 0.6rem;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      color: var(--green-dim);
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+    .skill-tag:hover {
+      background: var(--green-dk);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    /* ── EXPERIENCE ── */
+    #experience { border-bottom: 1px solid var(--border); background: var(--bg); }
+    .exp-list { display: flex; flex-direction: column; gap: 2rem; }
+    .exp-item {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .exp-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .exp-date {
+      font-size: 0.68rem;
+      color: var(--gray2);
+      letter-spacing: 0.08em;
+      padding-top: 0.2rem;
+    }
+    .exp-role {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.25rem;
+    }
+    .exp-company {
+      font-size: 0.75rem;
+      color: var(--green-dim);
+      margin-bottom: 0.85rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .exp-company .loc { color: var(--gray2); }
+    .exp-bullets {
+      margin: 0; padding: 0; list-style: none;
+    }
+    .exp-bullets li {
+      font-size: 0.76rem;
+      color: var(--gray);
+      line-height: 1.75;
+      padding-left: 1.25rem;
+      position: relative;
+      margin-bottom: 0.4rem;
+    }
+    .exp-bullets li::before {
+      content: '>';
+      position: absolute; left: 0;
+      color: var(--green-dim);
+    }
+
+    /* ── ABOUT ── */
+    #about { border-bottom: 1px solid var(--border); background: var(--bg2); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 4rem;
+      align-items: start;
+    }
+    .about-text p {
+      font-size: 0.86rem;
+      color: var(--gray);
+      line-height: 1.9;
+      margin-bottom: 1.25rem;
+    }
+    .about-text p .hi { color: var(--green-dim); }
+    .about-text p strong { color: var(--white); font-weight: 600; }
+    .about-edu {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .edu-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      padding: 1.1rem 1.3rem;
+    }
+    .edu-degree {
+      font-size: 0.78rem;
+      color: var(--white);
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+    .edu-school {
+      font-size: 0.72rem;
+      color: var(--green-dim);
+      margin-bottom: 0.15rem;
+    }
+    .edu-date { font-size: 0.65rem; color: var(--gray2); letter-spacing: 0.08em; }
+
+    /* Photo frame */
+    .photo-frame { position: relative; }
+    .photo-frame::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border: 1px solid var(--border2);
+      z-index: 0;
+    }
+    .photo-frame::after {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border: 1px solid var(--border);
+      z-index: 0;
+    }
+    .photo-frame img {
+      width: 100%;
+      display: block;
+      position: relative;
+      z-index: 1;
+      filter: contrast(1.05) grayscale(15%);
+      transition: filter 0.3s;
+    }
+    .photo-frame:hover img { filter: grayscale(0%) contrast(1); }
+    .photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 65%, rgba(0,0,0,0.7));
+      z-index: 2;
+      pointer-events: none;
+    }
+    .photo-caption {
+      position: absolute;
+      bottom: 0.75rem;
+      left: 0.75rem;
+      z-index: 3;
+      font-size: 0.65rem;
+      color: var(--green);
+      letter-spacing: 0.1em;
+      background: rgba(0,0,0,0.7);
+      padding: 0.2rem 0.5rem;
+      border: 1px solid var(--border2);
+    }
+
+    .achievements {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-top: 2rem;
+    }
+    .achievement-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      padding: 0.85rem 1.1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 0.74rem;
+      color: var(--gray);
+      line-height: 1.6;
+      transition: border-color 0.2s;
+    }
+    .achievement-item:hover { border-color: var(--border2); }
+    .achievement-item .icon { color: var(--amber); flex-shrink: 0; font-size: 0.9rem; }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--bg); }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .contact-intro {
+      font-size: 0.84rem;
+      color: var(--gray);
+      line-height: 1.85;
+      margin-bottom: 2rem;
+    }
+    .contact-links { display: flex; flex-direction: column; gap: 0.75rem; }
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-link::before {
+      content: '→';
+      position: absolute;
+      right: -20px;
+      color: var(--green);
+      transition: right 0.2s;
+    }
+    .contact-link:hover { border-color: var(--green-dk); color: var(--white); background: var(--bg3); }
+    .contact-link:hover::before { right: 1rem; }
+    .contact-link svg { width: 14px; height: 14px; fill: currentColor; color: var(--green-dim); flex-shrink: 0; }
+    .contact-label { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray2); min-width: 65px; }
+
+    /* Terminal-style contact form */
+    .contact-form-wrap {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+    }
+    .form-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1rem;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.65rem;
+      color: var(--gray2);
+    }
+    .form-bar-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .form-body { padding: 1.5rem; }
+    .form-field { margin-bottom: 1.25rem; }
+    .form-label {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green-dim);
+      margin-bottom: 0.4rem;
+    }
+    .form-label::before { content: '$ '; color: var(--gray2); }
+    .form-input, .form-textarea {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      color: var(--white);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 0.7rem 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--green); }
+    .form-textarea { height: 110px; }
+    .form-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background: var(--green);
+      border: none;
+      color: var(--bg);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: none;
+      transition: background 0.2s;
+    }
+    .form-btn:hover { background: var(--amber); }
+
+    /* ── CASE STUDY MODAL ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-window {
+      background: var(--bg2);
+      border: 1px solid var(--green);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px var(--green-glow);
+      width: 100%;
+      max-width: 900px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+    .modal-backdrop.active .modal-window {
+      transform: translateY(0);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.8rem 1.25rem;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-title {
+      font-size: 0.75rem;
+      color: var(--white);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+    .modal-close {
+      margin-left: auto;
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--gray);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 0.25rem 0.6rem;
+      cursor: none;
+      transition: all 0.2s;
+    }
+    .modal-close:hover {
+      color: var(--red);
+      border-color: var(--red);
+    }
+    .modal-body {
+      padding: 2rem;
+      overflow-y: auto;
+      line-height: 1.85;
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+    .modal-body h3 {
+      font-size: 1.25rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+    .modal-body h4 {
+      font-size: 0.85rem;
+      color: var(--amber);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 1.5rem 0 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .modal-body h4::before { content: '## '; color: var(--gray2); }
+    .modal-body p { margin-bottom: 1rem; }
+    .modal-ascii-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--green-dim);
+      white-space: pre;
+      overflow-x: auto;
+      margin: 1rem 0;
+      line-height: 1.4;
+    }
+    .modal-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--border);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.25rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg2);
+      position: relative;
+      z-index: 10;
+    }
+    .footer-copy {
+      font-size: 0.68rem;
+      color: var(--gray2);
+      letter-spacing: 0.08em;
+    }
+    .footer-copy span { color: var(--green-dim); font-weight: 600; }
+    .footer-right { font-size: 0.65rem; color: var(--gray2); letter-spacing: 0.08em; }
+
+    /* ── SCROLL REVEAL (Ultra-Smooth 120fps Compositing) ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.38s ease-out, transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+      will-change: auto;
+    }
+
+    /* ── GLITCH EFFECT ── */
+    .glitch { position: relative; display: inline-block; }
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .glitch::before {
+      color: var(--cyan);
+      clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+      transform: translateX(-3px);
+      animation: glitch1 4s steps(1) infinite;
+    }
+    .glitch::after {
+      color: var(--red);
+      clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+      transform: translateX(3px);
+      animation: glitch2 4s steps(1) infinite;
+    }
+    @keyframes glitch1 {
+      0%, 90%, 100% { transform: translateX(0); opacity: 0; }
+      92% { transform: translateX(-4px); opacity: 1; }
+      94% { transform: translateX(2px); opacity: 1; }
+      96% { transform: translateX(0); opacity: 0; }
+    }
+    @keyframes glitch2 {
+      0%, 90%, 100% { transform: translateX(0); opacity: 0; }
+      91% { transform: translateX(4px); opacity: 1; }
+      93% { transform: translateX(-2px); opacity: 1; }
+      95% { transform: translateX(0); opacity: 0; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      #hero { grid-template-columns: 1fr; padding: 3rem 1.5rem; gap: 2.5rem; }
+      .hero-right { width: 100%; }
+      .metrics-banner { grid-template-columns: repeat(2, 1fr); }
+      .metric-card:nth-child(2) { border-right: none; }
+      .metric-card:nth-child(3) { border-top: 1px solid var(--border); }
+      .metric-card:nth-child(4) { border-top: 1px solid var(--border); }
+      .section-inner { padding: 3.5rem 1.5rem; }
+      .skill-meters-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+      .about-grid { grid-template-columns: 1fr; }
+      .photo-frame { max-width: 280px; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .exp-item { grid-template-columns: 1fr; gap: 0.5rem; }
+      footer { flex-direction: column; gap: 0.75rem; text-align: center; }
+    }
+    @media (max-width: 600px) {
+      .metrics-banner { grid-template-columns: 1fr; }
+      .metric-card { border-right: none !important; border-bottom: 1px solid var(--border); }
+      .skills-grid { grid-template-columns: 1fr; }
+      .project-footer { flex-direction: column; align-items: flex-start; }
+      .modal-window { max-height: 95vh; }
+    }
+  </style>
+</head>
+<body class="theme-green">
+
+<!-- Matrix Rain Canvas Background -->
+<canvas id="matrix-canvas" aria-hidden="true"></canvas>
+
+<!-- Noise & CRT effects -->
+<div class="noise" aria-hidden="true"></div>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- Custom Cursor Elements -->
+<div id="cursor" aria-hidden="true"></div>
+<div id="cursor-dot" aria-hidden="true"></div>
+
+<!-- Boot Loader -->
+<div id="loader" aria-hidden="true">
+  <div id="loader-text">INITIALIZING SHELL & KERNEL...</div>
+  <div id="loader-bar-wrap"><div id="loader-bar"></div></div>
+  <div id="loader-pct">0%</div>
+</div>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-brand">
+    <a href="#hero" class="nav-logo">JM<span>_</span></a>
+    <div class="nav-controls">
+      <button class="ctrl-pill" id="theme-btn" title="Toggle Theme (CRT Green / Amber / Cyan / Light Console)">Theme: CRT</button>
+      <button class="ctrl-pill" id="matrix-btn" title="Toggle background digital rain">Matrix: ON</button>
+      <button class="ctrl-pill" id="cursor-btn" title="Toggle cursor mode (Modern / Retro / System Default)">Cursor: Modern</button>
+      <button class="ctrl-pill" id="sound-btn" title="Toggle audio sound effects (Web Audio UI clicks & beeps)">Sound: ON</button>
+    </div>
+  </div>
+
+  <ul class="nav-links">
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact" class="nav-cta">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ── HERO ── -->
+  <section id="hero">
+    <div class="hero-left">
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        Available for Full-Stack &amp; ML Roles
+      </div>
+
+      <p class="hero-greeting">$ whoami</p>
+      <h1 class="hero-name" id="hero-typewriter-name">
+        <span class="glitch" data-text="Jaideep">Jaideep</span><br/>
+        Manupati<span class="cursor-blink"></span>
+      </h1>
+      <p class="hero-tagline">
+        Full-Stack Engineer<span class="sep">/</span>ML Researcher
+      </p>
+      <p class="hero-bio">
+        <span class="hi">// </span>Master of Engineering in Computer Science @ <strong>Virginia Tech</strong> (Alexandria, VA). Engineering scalable distributed architectures, high-performance web systems, and intelligent AI pipelines at production scale.
+      </p>
+
+      <div class="hero-links">
+        <a href="#projects" class="btn-primary">
+          ▸ View Projects
+        </a>
+        <a href="Jaideep%20Manupati%20Resume.pdf" class="btn-outline-hero" target="_blank" download>
+          ↓ Resume.pdf
+        </a>
+      </div>
+
+      <div class="social-strip">
+        <a href="https://github.com/jaideep1021" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/jaideep-manupati-976080203/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+        <a href="mailto:jaideepmanupati21@gmail.com">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          jaideepmanupati21@gmail.com
+        </a>
+      </div>
+    </div>
+
+    <!-- Interactive Terminal Widget -->
+    <div class="hero-right">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="t-dot t-dot-r"></span>
+          <span class="t-dot t-dot-y"></span>
+          <span class="t-dot t-dot-g"></span>
+          <span class="t-title">jaideep@vt-innovation-campus:~</span>
+        </div>
+        <div class="terminal-chips">
+          <button class="t-chip" data-cmd="profile">cat profile.json</button>
+          <button class="t-chip" data-cmd="stack">./show_stack.sh</button>
+          <button class="t-chip" data-cmd="awards">ls awards/</button>
+          <button class="t-chip" data-cmd="clear">clear</button>
+        </div>
+        <div class="terminal-body" id="term-body">
+          <span class="t-line"><span class="t-prompt">jaideep@vt:~$</span> <span class="t-cmd">cat profile.json</span></span>
+          <span class="t-line">{</span>
+          <span class="t-line">  <span class="t-key">"name"</span>: <span class="t-str">"Jaideep Manupati"</span>,</span>
+          <span class="t-line">  <span class="t-key">"role"</span>: <span class="t-str">"Full-Stack Engineer &amp; ML Researcher"</span>,</span>
+          <span class="t-line">  <span class="t-key">"education"</span>: <span class="t-str">"MEng CS @ Virginia Tech (May 2027)"</span>,</span>
+          <span class="t-line">  <span class="t-key">"undergrad"</span>: <span class="t-str">"B.Tech IT @ NIT Srinagar (July 2025)"</span>,</span>
+          <span class="t-line">  <span class="t-key">"location"</span>: <span class="t-str">"Alexandria, VA / Washington DC Area"</span>,</span>
+          <span class="t-line">  <span class="t-key">"open_to_work"</span>: <span class="t-bool">true</span>,</span>
+          <span class="t-line">  <span class="t-key">"core_focus"</span>: [</span>
+          <span class="t-line">    <span class="t-str">"Distributed Full-Stack Systems Architecture"</span>,</span>
+          <span class="t-line">    <span class="t-str">"High-Throughput Asynchronous APIs (FastAPI / Node)"</span>,</span>
+          <span class="t-line">    <span class="t-str">"Modern React / Next.js &amp; TypeScript Interfaces"</span>,</span>
+          <span class="t-line">    <span class="t-str">"Time-Series &amp; Vector Databases (PostgreSQL / TimescaleDB)"</span>,</span>
+          <span class="t-line">    <span class="t-str">"Production AI &amp; LLM Retrieval Systems"</span></span>
+          <span class="t-line">  ],</span>
+          <span class="t-line">  <span class="t-key">"hackathon_wins"</span>: [<span class="t-str">"VTHacks 14 Healthcare Track 🏆"</span>],</span>
+          <span class="t-line">  <span class="t-key">"publications"</span>: [<span class="t-str">"IJIRT: Multilingual TTS Architecture"</span>]</span>
+          <span class="t-line">}</span>
+          <span class="t-line">&nbsp;</span>
+          <span class="t-line"><span class="t-prompt">jaideep@vt:~$</span> <span class="t-cursor-blink"></span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── IMPACT METRICS ── -->
+  <div class="metrics-banner reveal">
+    <div class="metric-card">
+      <div class="metric-val">$14B<span class="unit">/yr</span></div>
+      <div class="metric-label">CMS Transactions Audited</div>
+      <div class="metric-sub">// FalsePay TimescaleDB engine</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">40<span class="unit">%</span></div>
+      <div class="metric-label">Hallucination Reduction</div>
+      <div class="metric-sub">// DeBERTa-v3 cross-encoder pipeline</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">60<span class="unit">%</span></div>
+      <div class="metric-label">Inference Latency Cut</div>
+      <div class="metric-sub">// Parallelized Whisper &amp; NLP pipelines</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">#1<span class="unit">st</span></div>
+      <div class="metric-label">VTHacks 14 Winner</div>
+      <div class="metric-sub">// Impiricus Healthcare Track out of 500+</div>
+    </div>
+  </div>
+
+  <!-- ── PROJECTS ── -->
+  <section id="projects">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div>
+          <p class="section-label">selected engineering work</p>
+          <h2 class="section-title">Projects<span class="accent">.</span></h2>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="projects-grid">
+
+        <!-- 01: FalsePay -->
+        <div class="project-card reveal">
+          <div class="project-top">
+            <div class="project-meta">
+              <span class="project-code">01 / FPY // CMS Dispute Defense Platform</span>
+              <h3 class="project-name">FalsePay — HCP Payments Risk &amp; Audit Platform</h3>
+            </div>
+            <div class="project-badges">
+              <span class="project-badge">🏆 Winner · VTHacks 14</span>
+              <span class="project-badge badge-contributor">Contributor</span>
+            </div>
+          </div>
+
+          <ul class="project-bullets">
+            <li>Architected the high-throughput <strong style="color:var(--white)">FastAPI backend</strong> and asynchronous <strong style="color:var(--white)">SQLAlchemy / PostgreSQL</strong> data layer analyzing <strong style="color:var(--white)">$14B in annual CMS Open Payments</strong> records.</li>
+            <li>Modeled multi-dimensional time-series payment transactions using <strong style="color:var(--white)">TimescaleDB hypertables</strong> for ultra-efficient time-bucketed aggregation, trend inspection, and anomaly auditing.</li>
+            <li>Engineered an explainable risk-detection pipeline combining <strong style="color:var(--white)">Isolation Forest</strong> anomaly modeling with <strong style="color:var(--white)">pgvector semantic similarity search</strong> to automatically identify physician specialty-to-product payment discrepancies.</li>
+            <li>Designed a cryptographically secure physician dispute workflow utilizing hashed, expiring, revocable tokens, live <strong style="color:var(--white)">CMS NPPES Registry</strong> provider verification, and automated LLM-generated explanations; containerized entire stack via Docker.</li>
+          </ul>
+
+          <div class="project-footer">
+            <div class="project-stack">
+              <span class="tag">FastAPI</span>
+              <span class="tag">PostgreSQL</span>
+              <span class="tag">TimescaleDB</span>
+              <span class="tag">pgvector</span>
+              <span class="tag">Isolation Forest</span>
+              <span class="tag">Docker</span>
+              <span class="tag">SQLAlchemy</span>
+              <span class="tag">JWT Auth</span>
+            </div>
+            <div class="project-actions">
+              <a href="https://www.falsepay.health/" target="_blank" rel="noopener" class="project-action-link live-link" title="Visit Live Deployed App">
+                <span class="live-pulse"></span>
+                <span>Live App: falsepay.health ↗</span>
+              </a>
+              <a href="https://devpost.com/software/falsepay" target="_blank" rel="noopener" class="project-action-link devpost-link" title="View Devpost Submission & Hackathon Win">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M6.002 1.61L0 12.004L6.002 22.39h11.996L24 12.004L17.998 1.61H6.002zm1.593 4.084h3.947c2.812 0 4.608 1.488 4.608 4.148c0 2.66-1.796 4.15-4.608 4.15H7.595V5.694zm2.565 6.326h1.24c1.472 0 2.222-.67 2.222-2.178c0-1.508-.75-2.178-2.222-2.178h-1.24v4.356z"/></svg>
+                <span>Devpost ↗</span>
+              </a>
+              <a href="https://github.com/sudip-manchare/hcp-outbound" target="_blank" rel="noopener" class="project-action-link" title="View GitHub Code Repository">
+                <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                <span>GitHub ↗</span>
+              </a>
+              <button class="project-action-link case-study-btn" data-project="falsepay">
+                <span>[ Deep Dive Case Study ]</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02: SoundConsent -->
+        <div class="project-card reveal">
+          <div class="project-top">
+            <div class="project-meta">
+              <span class="project-code">02 / SCT // Clinical AI &amp; Voice Consent Platform</span>
+              <h3 class="project-name">SoundConsent — Teach-It-Back Clinical Trial Consent Companion</h3>
+            </div>
+            <div class="project-badges">
+              <span class="project-badge">⚡ Live Platform</span>
+              <span class="project-badge badge-contributor">Full-Stack &amp; AI</span>
+            </div>
+          </div>
+
+          <ul class="project-bullets">
+            <li>Architected the asynchronous <strong style="color:var(--white)">Fastify (TypeScript) backend</strong> and document processing pipeline to convert dense multi-page Informed Consent Forms (ICFs) into an interactive, section-by-section teach-back dialog.</li>
+            <li>Engineered conversational RAG workflows using the <strong style="color:var(--white)">Google Gemini API</strong> to translate complex clinical trial protocols into accessible 6th–8th grade language, generate dynamic teach-back comprehension prompts, and semantically grade patient explanations.</li>
+            <li>Implemented strict <strong style="color:var(--white)">clinical grounding guardrails</strong> and fail-closed safety evaluation, preventing out-of-scope medical hallucination while escalating ambiguous or high-risk participant questions directly to human clinical investigators.</li>
+            <li>Integrated <strong style="color:var(--white)">ElevenLabs Conversational AI &amp; Voice Synthesis</strong> for ultra-low-latency, accessible voice interactions, paired with an automated <strong style="color:var(--white)">Coordinator Understanding Report</strong> tracking comprehension gaps across trial cohorts.</li>
+          </ul>
+
+          <div class="project-footer">
+            <div class="project-stack">
+              <span class="tag">TypeScript</span>
+              <span class="tag">Fastify</span>
+              <span class="tag">Gemini API</span>
+              <span class="tag">ElevenLabs AI</span>
+              <span class="tag">RAG</span>
+              <span class="tag">pgvector</span>
+              <span class="tag">React</span>
+              <span class="tag">REST APIs</span>
+              <span class="tag">Docker</span>
+            </div>
+            <div class="project-actions">
+              <a href="https://www.soundconsent.tech/" target="_blank" rel="noopener" class="project-action-link live-link" title="Visit Live Deployed App">
+                <span class="live-pulse"></span>
+                <span>Live App: soundconsent.tech ↗</span>
+              </a>
+              <a href="https://github.com/jaideep1021/soundconsent" target="_blank" rel="noopener" class="project-action-link" title="View GitHub Code Repository">
+                <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                <span>GitHub ↗</span>
+              </a>
+              <button class="project-action-link case-study-btn" data-project="soundconsent">
+                <span>[ Deep Dive Case Study ]</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03: Confid.AI -->
+        <div class="project-card reveal">
+          <div class="project-top">
+            <div class="project-meta">
+              <span class="project-code">03 / CAI // RAG Guardrails &amp; Evaluation</span>
+              <h3 class="project-name">Confid.AI — Hybrid Retrieval &amp; LLM Evaluation Platform</h3>
+            </div>
+            <div class="project-badges">
+              <span class="project-badge">Mentored · Boeing</span>
+              <span class="project-badge badge-contributor">Contributor</span>
+            </div>
+          </div>
+
+          <ul class="project-bullets">
+            <li>Architected a modular AI evaluation platform using <strong style="color:var(--white)">FastAPI, LangChain, and LLaMA 3.3 70B</strong> with interchangeable retrieval, scoring, and inference components; deployed via Docker + Kubernetes on Virginia Tech CS Launch infrastructure.</li>
+            <li>Engineered a three-stage hybrid retrieval pipeline combining <strong style="color:var(--white)">Sentence-Transformer dense retrieval</strong>, <strong style="color:var(--white)">BM25 lexical search</strong>, and <strong style="color:var(--white)">DeBERTa-v3 cross-encoder re-ranking</strong> over 512-token chunks — reducing hallucination rates by <strong style="color:var(--white)">40%</strong> versus single-metric baselines.</li>
+            <li>Developed a confidence-scoring framework measuring semantic consistency, factual completeness, and retrieval precision across grounded passages; served evaluation workflows through a JWT-secured REST API supporting <strong style="color:var(--white)">50+ concurrent users</strong>.</li>
+          </ul>
+
+          <div class="project-footer">
+            <div class="project-stack">
+              <span class="tag">LangChain</span>
+              <span class="tag">LLaMA 3.3 70B</span>
+              <span class="tag">DeBERTa-v3</span>
+              <span class="tag">BM25</span>
+              <span class="tag">Sentence-Transformers</span>
+              <span class="tag">FastAPI</span>
+              <span class="tag">Kubernetes</span>
+              <span class="tag">RAG</span>
+            </div>
+            <div class="project-actions">
+              <a href="https://github.com/dharaneesh71/confidence-scoring-framework" target="_blank" rel="noopener" class="project-action-link" title="View GitHub Code Repository">
+                <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                <span>dharaneesh71/confidence-scoring-framework ↗</span>
+              </a>
+              <button class="project-action-link case-study-btn" data-project="confid">
+                <span>[ Deep Dive Case Study ]</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04: Video Summarization -->
+        <div class="project-card reveal">
+          <div class="project-top">
+            <div class="project-meta">
+              <span class="project-code">04 / VSP // Multimodal NLP &amp; Video Intelligence</span>
+              <h3 class="project-name">FLAN-T5 &amp; Gemini Video Summarizer — Multimodal Platform</h3>
+            </div>
+            <div class="project-badges">
+              <span class="project-badge">📄 Capstone Engineering Project</span>
+              <span class="project-badge badge-contributor">FLAN-T5 &amp; Gemini</span>
+            </div>
+          </div>
+
+          <ul class="project-bullets">
+            <li>Engineered an end-to-end multimodal pipeline with <strong style="color:var(--white)">Flask, React, FLAN-T5, Google Gemini, and OpenAI Whisper</strong> — integrating video ingestion, speech transcription, NLP synthesis, REST APIs, and a low-latency UI.</li>
+            <li>Parallelized transcription audio chunking and NLP processing across asynchronous worker pools to reduce end-to-end inference latency by <strong style="color:var(--white)">60%</strong>.</li>
+            <li>Implemented intelligent topic segmentation and dual extractive-abstractive summarization algorithms to deliver timestamp-aligned summaries and chapter breakdowns for high-density academic and technical lecture content.</li>
+            <li>Authored the comprehensive 73-page technical engineering report benchmarking model performance (ROUGE-1, ROUGE-2, ROUGE-L) and evaluating transformer synthesis against human baselines.</li>
+          </ul>
+
+          <div class="project-footer">
+            <div class="project-stack">
+              <span class="tag">FLAN-T5</span>
+              <span class="tag">Gemini API</span>
+              <span class="tag">OpenAI Whisper</span>
+              <span class="tag">Flask</span>
+              <span class="tag">React</span>
+              <span class="tag">NLP</span>
+              <span class="tag">Python</span>
+              <span class="tag">REST APIs</span>
+            </div>
+            <div class="project-actions">
+              <a href="Report_major%20Final.pdf" target="_blank" rel="noopener" class="project-action-link report-link" title="Open Complete 73-Page Final Project Report (PDF)">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                <span>Final Project Report (PDF) ↗</span>
+              </a>
+              <button class="project-action-link case-study-btn" data-project="videosum">
+                <span>[ Deep Dive Case Study ]</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SKILLS SECTION WITH ANIMATED METERS ── -->
+  <section id="skills">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div>
+          <p class="section-label">verified competencies &amp; proficiency</p>
+          <h2 class="section-title">Skills<span class="accent">.</span></h2>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <!-- Animated Progress Meters -->
+      <div class="skills-overview-wrap reveal">
+        <div class="skills-overview-title">// SYSTEM ARCHITECTURE &amp; ENGINEERING METERS</div>
+        <div class="skill-meters-grid">
+          <div class="skill-meter-item">
+            <div class="skill-meter-head">
+              <span>Full-Stack &amp; Distributed Backend Systems</span>
+              <span class="skill-meter-pct">95%</span>
+            </div>
+            <div class="skill-meter-track">
+              <div class="skill-meter-fill" data-width="95%"></div>
+            </div>
+          </div>
+          <div class="skill-meter-item">
+            <div class="skill-meter-head">
+              <span>Asynchronous RESTful APIs (FastAPI / Node / Flask)</span>
+              <span class="skill-meter-pct">92%</span>
+            </div>
+            <div class="skill-meter-track">
+              <div class="skill-meter-fill" data-width="92%"></div>
+            </div>
+          </div>
+          <div class="skill-meter-item">
+            <div class="skill-meter-head">
+              <span>Time-Series &amp; Vector Databases (PostgreSQL / Timescale / pgvector)</span>
+              <span class="skill-meter-pct">90%</span>
+            </div>
+            <div class="skill-meter-track">
+              <div class="skill-meter-fill" data-width="90%"></div>
+            </div>
+          </div>
+          <div class="skill-meter-item">
+            <div class="skill-meter-head">
+              <span>AI / ML &amp; Hybrid RAG Pipelines (PyTorch / LangChain / DeBERTa)</span>
+              <span class="skill-meter-pct">88%</span>
+            </div>
+            <div class="skill-meter-track">
+              <div class="skill-meter-fill" data-width="88%"></div>
+            </div>
+          </div>
+          <div class="skill-meter-item">
+            <div class="skill-meter-head">
+              <span>Modern Frontend UI (React / Next.js / TypeScript / Tailwind)</span>
+              <span class="skill-meter-pct">86%</span>
+            </div>
+            <div class="skill-meter-track">
+              <div class="skill-meter-fill" data-width="86%"></div>
+            </div>
+          </div>
+          <div class="skill-meter-item">
+            <div class="skill-meter-head">
+              <span>Containerization &amp; Orchestration (Docker / Kubernetes / AWS)</span>
+              <span class="skill-meter-pct">85%</span>
+            </div>
+            <div class="skill-meter-track">
+              <div class="skill-meter-fill" data-width="85%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Tag Groups -->
+      <div class="skills-grid">
+        <div class="skill-group reveal">
+          <div class="skill-group-title">Languages</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">Java</span>
+            <span class="skill-tag">C++</span>
+            <span class="skill-tag">SQL</span>
+            <span class="skill-tag">TypeScript</span>
+            <span class="skill-tag">JavaScript</span>
+            <span class="skill-tag">C</span>
+            <span class="skill-tag">Bash</span>
+          </div>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group-title">Backend & Full-Stack</div>
+          <div class="skill-tags">
+            <span class="skill-tag">FastAPI</span>
+            <span class="skill-tag">Fastify</span>
+            <span class="skill-tag">Flask</span>
+            <span class="skill-tag">Node.js</span>
+            <span class="skill-tag">React</span>
+            <span class="skill-tag">Next.js</span>
+            <span class="skill-tag">REST APIs</span>
+            <span class="skill-tag">SQLAlchemy</span>
+            <span class="skill-tag">JWT</span>
+            <span class="skill-tag">Tailwind CSS</span>
+          </div>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group-title">Databases & Data Systems</div>
+          <div class="skill-tags">
+            <span class="skill-tag">PostgreSQL</span>
+            <span class="skill-tag">TimescaleDB</span>
+            <span class="skill-tag">pgvector</span>
+            <span class="skill-tag">MySQL</span>
+            <span class="skill-tag">Alembic</span>
+            <span class="skill-tag">Vector Similarity Search</span>
+            <span class="skill-tag">Time-Series Hypertables</span>
+          </div>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group-title">AI / Machine Learning</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Gemini API</span>
+            <span class="skill-tag">ElevenLabs AI</span>
+            <span class="skill-tag">PyTorch</span>
+            <span class="skill-tag">TensorFlow</span>
+            <span class="skill-tag">scikit-learn</span>
+            <span class="skill-tag">Hugging Face</span>
+            <span class="skill-tag">Sentence-Transformers</span>
+            <span class="skill-tag">DeBERTa-v3</span>
+            <span class="skill-tag">LangChain</span>
+            <span class="skill-tag">RAG Pipelines</span>
+            <span class="skill-tag">BM25</span>
+            <span class="skill-tag">NLP</span>
+            <span class="skill-tag">LLM Evaluation</span>
+          </div>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group-title">Cloud & Infrastructure</div>
+          <div class="skill-tags">
+            <span class="skill-tag">AWS (EC2, S3)</span>
+            <span class="skill-tag">Docker</span>
+            <span class="skill-tag">Kubernetes</span>
+            <span class="skill-tag">CI/CD Pipelines</span>
+            <span class="skill-tag">Linux</span>
+            <span class="skill-tag">Git</span>
+            <span class="skill-tag">Pytest</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── EXPERIENCE ── -->
+  <section id="experience">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div>
+          <p class="section-label">track record</p>
+          <h2 class="section-title">Experience<span class="accent">.</span></h2>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="exp-list">
+
+        <div class="exp-item reveal">
+          <div class="exp-date">Jan 2026 – Present</div>
+          <div class="exp-right">
+            <div class="exp-role">Operations Chair</div>
+            <div class="exp-company">Graduate Student Assembly · Virginia Tech <span class="loc">· Alexandria, VA</span></div>
+            <ul class="exp-bullets">
+              <li>Lead logistics and operational execution for graduate student events, governance, and technical community initiatives across Virginia Tech's Innovation Campus.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="exp-item reveal">
+          <div class="exp-date">Dec 2023 – Feb 2024</div>
+          <div class="exp-right">
+            <div class="exp-role">Undergraduate Research Intern</div>
+            <div class="exp-company">National Institute of Technology (NIT) Warangal <span class="loc">· India</span></div>
+            <ul class="exp-bullets">
+              <li>Developed an end-to-end multilingual text-to-speech system using <strong style="color:var(--white)">Tacotron 2 and Python</strong>, boosting phoneme-to-audio fidelity by 15% for low-resource languages; research published in <strong style="color:var(--white)">IJIRT</strong>.</li>
+              <li>Built phonetic alignment and spectrogram preprocessing pipelines in <strong style="color:var(--white)">PyTorch</strong> to clean noisy speech datasets and improve mel-spectrogram reconstruction for natural speech synthesis.</li>
+              <li>Engineered reproducible research workflows using Git and Confluence, formalizing dataset preprocessing and benchmark reporting to adhere to rigorous ML engineering standards.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ABOUT ── -->
+  <section id="about">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div>
+          <p class="section-label">whoami // human profile</p>
+          <h2 class="section-title">About<span class="accent">.</span></h2>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>
+            <span class="hi">// </span>Hey there! I'm <strong>Jaideep Manupati</strong>, a graduate student at <strong>Virginia Tech's Innovation Campus</strong> (Alexandria, VA) pursuing my Master of Engineering in Computer Science &amp; Applications (Graduating May 2027). Prior to VT, I earned my B.Tech in Information Technology from the <strong>National Institute of Technology (NIT) Srinagar</strong>.
+          </p>
+          <p>
+            I engineer software at the confluence of <strong>high-performance full-stack architectures</strong> and <strong>intelligent ML systems</strong>. I thrive on solving complex data challenges — whether that's architecting a fraud dispute engine analyzing $14B in federal CMS healthcare payment records or engineering hybrid RAG pipelines with cross-encoder re-ranking.
+          </p>
+          <p>
+            When I'm not writing APIs or fine-tuning models, I serve as Operations Chair for the Graduate Student Assembly at VT, and collaborate with passionate engineers building products that make a real difference.
+          </p>
+
+          <div class="about-edu">
+            <div class="edu-item">
+              <div class="edu-degree">Master of Engineering in Computer Science and Applications</div>
+              <div class="edu-school">Virginia Tech — Innovation Campus</div>
+              <div class="edu-date">Expected May 2027 · Alexandria, VA</div>
+            </div>
+            <div class="edu-item">
+              <div class="edu-degree">Bachelor of Technology in Information Technology</div>
+              <div class="edu-school">National Institute of Technology (NIT) Srinagar</div>
+              <div class="edu-date">Graduated July 2025 · India</div>
+            </div>
+          </div>
+
+          <div class="achievements">
+            <div class="achievement-item">
+              <span class="icon">🏆</span>
+              <span><strong style="color:var(--white)">1st Place Winner — VTHacks 14 (Impiricus Healthcare Track)</strong><br/>Built FalsePay, leading backend architecture, TimescaleDB time-series storage, and vector similarity search integration.</span>
+            </div>
+            <div class="achievement-item">
+              <span class="icon">📄</span>
+              <span><strong style="color:var(--white)">Published ML Research Paper — IJIRT</strong><br/>Researched and implemented multilingual Tacotron 2 text-to-speech architectures for low-resource languages.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="photo-frame reveal">
+          <img src="9CEBDE5B-AA3D-48C4-835F-2BAB82C0B7A4_1_105_c.jpeg" alt="Jaideep Manupati" loading="lazy" />
+          <div class="photo-overlay"></div>
+          <div class="photo-caption">jaideep_manupati.jpg</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section id="contact">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div>
+          <p class="section-label">open pipe // ping</p>
+          <h2 class="section-title">Contact<span class="accent">.</span></h2>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="contact-grid">
+        <div class="reveal">
+          <p class="contact-intro">
+            I am actively considering full-time opportunities, software engineering roles, and ML engineering / applied AI positions. Drop a line to talk tech, explore collaboration, or schedule a conversation.
+          </p>
+
+          <div class="contact-links">
+            <a href="mailto:jaideepm21@vt.edu" class="contact-link">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <span class="contact-label">VT Email</span>
+              jaideepm21@vt.edu
+            </a>
+            <a href="mailto:jaideepmanupati21@gmail.com" class="contact-link">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <span class="contact-label">Personal</span>
+              jaideepmanupati21@gmail.com
+            </a>
+            <a href="https://www.linkedin.com/in/jaideep-manupati-976080203/" target="_blank" rel="noopener" class="contact-link">
+              <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              <span class="contact-label">LinkedIn</span>
+              linkedin.com/in/jaideep-manupati-976080203
+            </a>
+            <a href="https://github.com/jaideep1021" target="_blank" rel="noopener" class="contact-link">
+              <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+              <span class="contact-label">GitHub</span>
+              github.com/jaideep1021
+            </a>
+          </div>
+        </div>
+
+        <!-- Terminal-style contact form -->
+        <div class="contact-form-wrap reveal">
+          <div class="form-bar">
+            <span class="form-bar-dot" style="background:#ff5f56"></span>
+            <span class="form-bar-dot" style="background:#ffbd2e"></span>
+            <span class="form-bar-dot" style="background:#27c93f"></span>
+            <span style="margin-left:auto; font-size:0.62rem; color:var(--gray2)">msg_dispatcher.sh</span>
+          </div>
+          <div class="form-body">
+            <form id="contact-form" action="https://formspree.io/f/xldgpjal" method="POST">
+              <div class="form-field">
+                <label class="form-label" for="name">name</label>
+                <input class="form-input" type="text" id="name" name="name" placeholder="Your name" required autocomplete="off" />
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="email">email</label>
+                <input class="form-input" type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="off" />
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="message">message</label>
+                <textarea class="form-textarea" id="message" name="message" placeholder="What would you like to build or discuss?" required></textarea>
+              </div>
+              <button type="submit" class="form-btn">▸ Send Message</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── CASE STUDY MODAL DIALOG ── -->
+<div id="case-study-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal-window">
+    <div class="modal-header">
+      <span class="t-dot t-dot-r" style="cursor:pointer" onclick="closeModal()"></span>
+      <span class="t-dot t-dot-y"></span>
+      <span class="t-dot t-dot-g"></span>
+      <span class="modal-title" id="modal-title">case_study.md</span>
+      <button class="modal-close" onclick="closeModal()">[ESC / CLOSE ✕]</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <!-- Injected by JavaScript -->
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p class="footer-copy">© 2026 <span>Jaideep Manupati</span> · Crafted with precision &amp; terminal obsession</p>
+  <p class="footer-right">Full-Stack Engineer · ML Researcher · Virginia Tech</p>
+</footer>
+
+<!-- ── INTERACTIVE SCRIPTS ── -->
+<script>
+  /* --- AUDIO FEEDBACK (Web Audio API Synthesizer) --- */
+  let soundEnabled = true;
+  let audioCtx = null;
+  function playClickSound(freq = 800, type = 'sine', duration = 0.03) {
+    if (!soundEnabled) return;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch (_) {}
+  }
+
+  /* --- LOADER SEQUENCE & SMOOTH NAME REVEAL --- */
+  const loader = document.getElementById('loader');
+  const bar = document.getElementById('loader-bar');
+  const pct = document.getElementById('loader-pct');
+  let progress = 0;
+  const steps = [
+    'MOUNTING FILE SYSTEM...',
+    'INITIALIZING TENSOR PIPELINES...',
+    'INDEXING PGVECTOR SIMILARITY...',
+    'READY.'
+  ];
+  let stepIdx = 0;
+  const loaderText = document.getElementById('loader-text');
+
+  const interval = setInterval(() => {
+    progress += Math.random() * 20 + 7;
+    if (progress > 100) progress = 100;
+    bar.style.width = progress + '%';
+    pct.textContent = Math.floor(progress) + '%';
+    const newStep = Math.floor(progress / 33);
+    if (newStep !== stepIdx && steps[newStep]) {
+      stepIdx = newStep;
+      loaderText.textContent = steps[newStep];
+      playClickSound(400 + stepIdx * 200, 'triangle', 0.04);
+    }
+    if (progress >= 100) {
+      clearInterval(interval);
+      loaderText.textContent = 'READY.';
+      setTimeout(() => {
+        loader.classList.add('fade-out');
+        setTimeout(() => {
+          loader.remove();
+          startTypewriterNameReveal();
+        }, 500);
+      }, 250);
+    }
+  }, 45);
+
+  /* --- NAME REVEAL TYPEWRITER EFFECT --- */
+  function startTypewriterNameReveal() {
+    const el = document.getElementById('hero-typewriter-name');
+    if (!el) return;
+    const fullName = "Jaideep\nManupati";
+    el.innerHTML = '<span class="cursor-blink"></span>';
+    let charIdx = 0;
+    const typeInterval = setInterval(() => {
+      charIdx++;
+      const current = fullName.substring(0, charIdx);
+      const parts = current.split('\n');
+      if (parts.length > 1) {
+        el.innerHTML = `<span class="glitch" data-text="${parts[0]}">${parts[0]}</span><br/>${parts[1]}<span class="cursor-blink"></span>`;
+      } else {
+        el.innerHTML = `<span class="glitch" data-text="${parts[0]}">${parts[0]}</span><span class="cursor-blink"></span>`;
+      }
+      playClickSound(700 + charIdx * 30, 'sine', 0.015);
+      if (charIdx >= fullName.length) {
+        clearInterval(typeInterval);
+      }
+    }, 70);
+  }
+
+  /* --- MODERN CUSTOM CURSOR & CURSOR TOGGLE --- */
+  const cursor = document.getElementById('cursor');
+  const cursorDot = document.getElementById('cursor-dot');
+  let cursorX = -100, cursorY = -100;
+  let ringX = -100, ringY = -100;
+
+  document.addEventListener('mousemove', e => {
+    cursorX = e.clientX;
+    cursorY = e.clientY;
+    if (cursorDot) {
+      cursorDot.style.left = cursorX + 'px';
+      cursorDot.style.top  = cursorY + 'px';
+    }
+  }, { passive: true });
+
+  function renderCursorRing() {
+    ringX += (cursorX - ringX) * 0.28;
+    ringY += (cursorY - ringY) * 0.28;
+    if (cursor) {
+      cursor.style.left = ringX + 'px';
+      cursor.style.top  = ringY + 'px';
+    }
+    requestAnimationFrame(renderCursorRing);
+  }
+  requestAnimationFrame(renderCursorRing);
+
+  // Universal event delegation for hover states (supports dynamic modal content)
+  const hoverSelector = 'a, button, .project-card, .skill-tag, .t-chip, .ctrl-pill, input, textarea, .project-action-link, .case-study-btn, .modal-close, .t-dot, [role="button"]';
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(hoverSelector)) {
+      if (cursor) cursor.classList.add('hover');
+      if (cursorDot) cursorDot.classList.add('hover');
+    }
+  }, { passive: true });
+
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(hoverSelector)) {
+      if (cursor) cursor.classList.remove('hover');
+      if (cursorDot) cursorDot.classList.remove('hover');
+    }
+  }, { passive: true });
+
+  /* Cursor Mode Switcher: Modern -> Retro -> System Default */
+  const cursorModes = ['cursor-modern', 'cursor-retro', 'cursor-system'];
+  const cursorLabels = ['Cursor: Modern', 'Cursor: Retro', 'Cursor: System'];
+  let currentCursorIdx = 0;
+  const cursorBtn = document.getElementById('cursor-btn');
+  if (cursorBtn) {
+    cursorBtn.addEventListener('click', () => {
+      document.body.classList.remove(cursorModes[currentCursorIdx]);
+      currentCursorIdx = (currentCursorIdx + 1) % cursorModes.length;
+      document.body.classList.add(cursorModes[currentCursorIdx]);
+      cursorBtn.textContent = cursorLabels[currentCursorIdx];
+      playClickSound(1050, 'triangle', 0.04);
+    });
+  }
+
+  /* --- THEME TOGGLE (CRT GREEN -> AMBER -> CYAN -> LIGHT CONSOLE) --- */
+  const themes = ['theme-green', 'theme-amber', 'theme-cyan', 'theme-light'];
+  const themeLabels = ['Theme: CRT', 'Theme: Amber', 'Theme: Cyan', 'Theme: Light'];
+  let currentThemeIdx = 0;
+  const themeBtn = document.getElementById('theme-btn');
+  themeBtn.addEventListener('click', () => {
+    document.body.classList.remove(themes[currentThemeIdx]);
+    currentThemeIdx = (currentThemeIdx + 1) % themes.length;
+    document.body.classList.add(themes[currentThemeIdx]);
+    themeBtn.textContent = themeLabels[currentThemeIdx];
+    playClickSound(1200, 'square', 0.06);
+  });
+
+  /* --- AUDIO / SOUND FX TOGGLE --- */
+  const soundBtn = document.getElementById('sound-btn');
+  if (soundBtn) {
+    soundBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundBtn.textContent = soundEnabled ? 'Sound: ON' : 'Sound: OFF';
+      soundBtn.classList.toggle('active', soundEnabled);
+      if (soundEnabled) {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        playClickSound(880, 'sine', 0.05);
+      }
+    });
+  }
+
+  // Ensure AudioContext resumes smoothly on first user interaction
+  window.addEventListener('pointerdown', () => {
+    if (soundEnabled && audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }, { once: true, passive: true });
+
+  /* --- MATRIX DIGITAL RAIN CANVAS (Synchronized via requestAnimationFrame) --- */
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+  let matrixRunning = true;
+  const matrixBtn = document.getElementById('matrix-btn');
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas, { passive: true });
+
+  const letters = '01010101XYZ0123456789ABCDEFλμσπ<>{}[]=+-*&';
+  const fontSize = 14;
+  let columns = Math.floor(canvas.width / fontSize);
+  let drops = Array(columns).fill(1);
+
+  function drawMatrix() {
+    ctx.fillStyle = 'rgba(8, 8, 8, 0.08)';
+    if (document.body.classList.contains('theme-light')) {
+      ctx.fillStyle = 'rgba(245, 245, 240, 0.12)';
+    }
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    let color = '#00ff41';
+    if (document.body.classList.contains('theme-amber')) color = '#ffb000';
+    if (document.body.classList.contains('theme-cyan'))  color = '#00f0ff';
+    if (document.body.classList.contains('theme-light')) color = '#007a2f';
+
+    ctx.fillStyle = color;
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+
+  let lastMatrixTime = 0;
+  const matrixInterval = 50; // smooth 20fps for matrix background
+  function loopMatrix(timestamp) {
+    if (matrixRunning) {
+      if (timestamp - lastMatrixTime > matrixInterval) {
+        lastMatrixTime = timestamp;
+        drawMatrix();
+      }
+    }
+    requestAnimationFrame(loopMatrix);
+  }
+  requestAnimationFrame(loopMatrix);
+
+  if (matrixBtn) {
+    matrixBtn.addEventListener('click', () => {
+      matrixRunning = !matrixRunning;
+      document.body.classList.toggle('matrix-off', !matrixRunning);
+      matrixBtn.textContent = matrixRunning ? 'Matrix: ON' : 'Matrix: OFF';
+      playClickSound(matrixRunning ? 1000 : 400, 'sawtooth', 0.05);
+    });
+  }
+
+  /* --- ANIMATED SKILL METERS --- */
+  const meterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.skill-meter-fill').forEach(fill => {
+          fill.style.width = fill.getAttribute('data-width');
+        });
+        meterObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.25 });
+  const skillsWrap = document.querySelector('.skills-overview-wrap');
+  if (skillsWrap) meterObserver.observe(skillsWrap);
+
+  /* --- INTERACTIVE HERO TERMINAL CLI --- */
+  const termBody = document.getElementById('term-body');
+  const commands = {
+    profile: `
+<span class="t-line"><span class="t-prompt">jaideep@vt:~$</span> <span class="t-cmd">cat profile.json</span></span>
+<span class="t-line">{</span>
+<span class="t-line">  <span class="t-key">"name"</span>: <span class="t-str">"Jaideep Manupati"</span>,</span>
+<span class="t-line">  <span class="t-key">"role"</span>: <span class="t-str">"Full-Stack Engineer &amp; ML Researcher"</span>,</span>
+<span class="t-line">  <span class="t-key">"degree"</span>: <span class="t-str">"MEng CS @ Virginia Tech (May 2027)"</span>,</span>
+<span class="t-line">  <span class="t-key">"undergrad"</span>: <span class="t-str">"B.Tech IT @ NIT Srinagar (July 2025)"</span>,</span>
+<span class="t-line">  <span class="t-key">"location"</span>: <span class="t-str">"Alexandria, VA / Washington DC Area"</span>,</span>
+<span class="t-line">  <span class="t-key">"open_to_work"</span>: <span class="t-bool">true</span>,</span>
+<span class="t-line">  <span class="t-key">"core_focus"</span>: [</span>
+<span class="t-line">    <span class="t-str">"Distributed Full-Stack Systems Architecture"</span>,</span>
+<span class="t-line">    <span class="t-str">"High-Throughput Asynchronous APIs (FastAPI / Node)"</span>,</span>
+<span class="t-line">    <span class="t-str">"Modern React / Next.js &amp; TypeScript Interfaces"</span>,</span>
+<span class="t-line">    <span class="t-str">"Time-Series &amp; Vector Databases (PostgreSQL / TimescaleDB)"</span>,</span>
+<span class="t-line">    <span class="t-str">"Production AI &amp; LLM Retrieval Systems"</span></span>
+<span class="t-line">  ],</span>
+<span class="t-line">  <span class="t-key">"hackathon_wins"</span>: [<span class="t-str">"VTHacks 14 Healthcare Track 🏆"</span>],</span>
+<span class="t-line">  <span class="t-key">"publications"</span>: [<span class="t-str">"IJIRT: Multilingual TTS Architecture"</span>]</span>
+<span class="t-line">}</span>
+<span class="t-line"><span class="t-prompt">jaideep@vt:~$</span> <span class="t-cursor-blink"></span></span>`,
+
+    stack: `
+<span class="t-line"><span class="t-prompt">jaideep@vt:~$</span> <span class="t-cmd">./show_stack.sh</span></span>
+<span class="t-line"><span class="t-key">[LANGUAGES]</span> Python, Java, C++, SQL, TypeScript, JavaScript, Bash</span>
+<span class="t-line"><span class="t-key">[FULL-STACK]</span> FastAPI, React, Next.js, Fastify, Flask, Node.js, SQLAlchemy</span>
+<span class="t-line"><span class="t-key">[DATABASES]</span>  TimescaleDB, pgvector, PostgreSQL, MySQL, Alembic</span>
+<span class="t-line"><span class="t-key">[AI / ML]</span>    Gemini API, PyTorch, ElevenLabs, LangChain, DeBERTa-v3, LLaMA 3.3</span>
+<span class="t-line"><span class="t-key">[CLOUD/OPS]</span>  Docker, Kubernetes, AWS (EC2, S3), Linux, CI/CD</span>
+<span class="t-line">&nbsp;</span>
+<span class="t-line"><span class="t-prompt">jaideep@vt:~$</span> <span class="t-cursor-blink"></span></span>`,
+
+    awards: `
+<span class="t-line"><span class="t-prompt">jaideep@vt:~$</span> <span class="t-cmd">ls -la awards/</span></span>
+<span class="t-line"><span class="t-val">drwxr-xr-x</span>  🏆 <span class="t-str">vthacks14_1st_place_impiricus.pdf</span> (FalsePay)</span>
+<span class="t-line"><span class="t-val">drwxr-xr-x</span>  📄 <span class="t-str">ijirt_tts_multilingual_research_paper.pdf</span></span>
+<span class="t-line"><span class="t-val">drwxr-xr-x</span>  📑 <span class="t-str">video_summarizer_major_final_report.pdf</span> (73 pages)</span>
+<span class="t-line"><span class="t-val">drwxr-xr-x</span>  ⭐ <span class="t-str">vt_gsa_operations_chair</span></span>
+<span class="t-line">&nbsp;</span>
+<span class="t-line"><span class="t-prompt">jaideep@vt:~$</span> <span class="t-cursor-blink"></span></span>`,
+
+    clear: `
+<span class="t-line"><span class="t-prompt">jaideep@vt:~$</span> <span class="t-cursor-blink"></span></span>`
+  };
+
+  document.querySelectorAll('.t-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const cmd = chip.dataset.cmd;
+      playClickSound(1100, 'sine', 0.04);
+      if (commands[cmd]) {
+        termBody.innerHTML = commands[cmd];
+        termBody.scrollTop = termBody.scrollHeight;
+      }
+    });
+  });
+
+  /* --- CASE STUDY MODAL DATA & CONTROLLER --- */
+  const caseStudies = {
+    falsepay: {
+      title: "falsepay_architecture_case_study.md",
+      content: `
+        <h3>FalsePay — HCP Payments Risk &amp; Audit Platform</h3>
+        <p><strong style="color:var(--green)">🏆 Winner — VTHacks 14 Healthcare Track (Impiricus)</strong> | Live at <a href="https://www.falsepay.health/" target="_blank" style="color:var(--amber)">falsepay.health</a> | Devpost: <a href="https://devpost.com/software/falsepay" target="_blank" style="color:var(--amber)">devpost.com/software/falsepay</a></p>
+
+        <h4>Executive Problem Statement</h4>
+        <p>The U.S. Centers for Medicare &amp; Medicaid Services (CMS) processes over $14 Billion annually in reported physician transparency transactions. Pharmaceutical manufacturers frequently file discrepancies, duplicate charges, and incorrect National Provider Identifier (NPI) mappings that expose physicians to reputational and regulatory audit risk with no automated recourse.</p>
+
+        <h4>Technical Architecture</h4>
+        <div class="modal-ascii-box">
+[ CMS Open Payments Data ] ($14B/yr)
+       │
+       ▼
+[ Data Ingestion Engine ] ──► [ NPPES Live Registry Cross-Validation ]
+       │
+       ├──► [ TimescaleDB Hypertables ] (Time-bucketed aggregation)
+       │
+       ├──► [ Isolation Forest Anomaly Detection ] (Outlier scoring)
+       │
+       └──► [ pgvector Semantic Embeddings ] (Specialty-to-product mapping)
+                     │
+                     ▼
+       [ FastAPI Asynchronous Backend ] ──► [ Secure Cryptographic Token Workflow ]
+                     │
+                     ▼
+       [ Physician Dispute Dashboard & AI-Generated Evidence Packets ]
+        </div>
+
+        <h4>Key Engineering Highlights</h4>
+        <ul style="padding-left:1.2rem; margin-bottom:1rem;">
+          <li><strong>TimescaleDB Hypertables:</strong> Handled multi-million row CMS transaction logs with hypertable chunk partitioning, speeding up time-series audit queries by 12x over raw relational SQL.</li>
+          <li><strong>Isolation Forest + pgvector:</strong> Combined unsupervised anomaly detection (identifying abnormal cash flows) with cosine similarity embeddings to verify if a doctor's specialty matches the drugs they supposedly accepted payments for.</li>
+          <li><strong>Zero-Trust Dispute Links:</strong> Built hashed, single-use revocable tokens for physicians to review and contest claims without requiring cumbersome prior account registrations.</li>
+        </ul>
+
+        <div class="modal-tags">
+          <span class="tag">FastAPI</span>
+          <span class="tag">TimescaleDB</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">pgvector</span>
+          <span class="tag">Isolation Forest</span>
+          <span class="tag">Docker</span>
+          <span class="tag">NPPES API</span>
+        </div>
+      `
+    },
+
+    soundconsent: {
+      title: "soundconsent_clinical_companion_case_study.md",
+      content: `
+        <h3>SoundConsent — The Teach-It-Back Clinical Trial Consent Platform</h3>
+        <p><strong style="color:var(--green)">⚡ Live Deployed Platform</strong> | Live at <a href="https://www.soundconsent.tech/" target="_blank" style="color:var(--amber)">soundconsent.tech</a> | GitHub: <a href="https://github.com/jaideep1021/soundconsent" target="_blank" style="color:var(--amber)">github.com/jaideep1021/soundconsent</a></p>
+
+        <h4>Executive Problem Statement</h4>
+        <p>Informed Consent Forms (ICFs) for clinical trials are notoriously dense, legalistic, and difficult for patients to comprehend. Historical clinical research indicates that over 48% of participants fail to grasp core concepts such as randomization, risks, and voluntary withdrawal. SoundConsent operationalizes the AHRQ-recommended <em>teach-back methodology</em> to turn static forms into an interactive, voice-and-text guided dialog, providing research coordinators and investigators with real-time "Understanding Reports" prior to formal study enrollment.</p>
+
+        <h4>Technical Architecture</h4>
+        <div class="modal-ascii-box">
+[ Approved Trial ICF PDF ] (Up to 20MB)
+       │
+       ▼
+[ Fastify / TypeScript Backend ] ──► [ PDF Parsing &amp; Section Chunker ]
+       │                                     │
+       ├──► [ Gemini API LLM Engine ] ◄──────┘
+       │    (6th-8th Grade Simplification &amp; Teach-Back Question Generator)
+       │
+       ├──► [ Vector Database / Embeddings ] (Cosine-similarity RAG)
+       │
+       ├──► [ ElevenLabs Conversational AI Engine ] (Low-Latency Voice / TTS / ASR)
+       │                     │
+       ▼                     ▼
+[ Real-Time Grounding &amp; Guardrail Evaluator ]
+       │ (Validates patient explanation against source ICF; fails closed)
+       ▼
+[ Coordinator Dashboard: Comprehensive Patient Understanding Report ]
+        </div>
+
+        <h4>Key Engineering Highlights</h4>
+        <ul>
+          <li><strong>Document Parsing &amp; Ingestion:</strong> Built a Fastify ingestion endpoint that processes and verifies protocol versions, parses complex PDFs into semantic trial sections (Purpose, Procedures, Risks, Freedom to Withdraw), and indexes vector embeddings for grounded retrieval.</li>
+          <li><strong>Gemini LLM Orchestration:</strong> Programmed multi-turn prompt chains using the Gemini API to adapt legalistic ICF passages into clear 6th–8th grade conversational segments, generate targeted teach-back questions, and grade participant comprehension.</li>
+          <li><strong>Clinical Grounding &amp; Safety Guardrails:</strong> Implemented a secondary source-grounding evaluator with fail-closed safety constraints to ensure zero speculative medical advice and automatically flag complex clinical questions for coordinator follow-up.</li>
+          <li><strong>Conversational Voice Synthesis:</strong> Integrated ElevenLabs Conversational AI for natural, accessible voice-guided interactions, enabling hands-free study preparation for patients with visual or literacy barriers.</li>
+          <li><strong>Actionable Coordinator Understanding Reports:</strong> Designed the coordinator hand-off pipeline that aggregates section mastery, identifies knowledge gaps, and provides investigators with a prioritized briefing before the final consent conversation.</li>
+        </ul>
+
+        <div class="modal-tags">
+          <span class="tag">TypeScript</span>
+          <span class="tag">Fastify</span>
+          <span class="tag">Gemini API</span>
+          <span class="tag">ElevenLabs AI</span>
+          <span class="tag">RAG</span>
+          <span class="tag">pgvector</span>
+          <span class="tag">React</span>
+          <span class="tag">Docker</span>
+          <span class="tag">REST APIs</span>
+        </div>
+      `
+    },
+
+    confid: {
+      title: "confid_ai_hybrid_retrieval_case_study.md",
+      content: `
+        <h3>Confid.AI — Hybrid Retrieval &amp; LLM Evaluation Framework</h3>
+        <p><strong style="color:var(--green)">Mentored by Boeing</strong> | Deployed on Virginia Tech CS Launch Kubernetes Infrastructure</p>
+
+        <h4>The Challenge: Hallucination &amp; Grounding in Mission-Critical RAG</h4>
+        <p>Enterprise and aerospace applications cannot tolerate ungrounded answers. Single-metric RAG systems (pure vector cosine similarity) frequently pull high-level semantic matches that completely miss exact part numbers, error codes, and strict syntactic conditions, causing catastrophic hallucinations.</p>
+
+        <h4>3-Stage Hybrid Pipeline</h4>
+        <div class="modal-ascii-box">
+  User Query: "Inspect hydraulic actuator valve tolerance spec E-102"
+                     │
+                     ├──────────────────────────────┐
+                     ▼                              ▼
+          [ Stage 1: BM25 Lexical ]      [ Stage 1: Dense Embeddings ]
+          (Exact code / token match)     (Sentence-Transformers bi-encoder)
+                     │                              │
+                     └──────────────┬───────────────┘
+                                    ▼
+                     [ Reciprocal Rank Fusion (RRF) ]
+                                    │
+                                    ▼
+                     [ Stage 2: DeBERTa-v3 Cross-Encoder ]
+                     (Full deep attention over query+chunk pairs)
+                                    │
+                                    ▼
+                     [ Stage 3: Confidence Scoring Framework ]
+                     (Semantic consistency + factual entailment)
+                                    │
+                                    ▼
+       [ LLaMA 3.3 70B Grounded Generation / Hallucination Guardrail ]
+        </div>
+
+        <h4>Engineering Outcomes</h4>
+        <ul style="padding-left:1.2rem; margin-bottom:1rem;">
+          <li><strong>40% Hallucination Cut:</strong> Re-ranking candidate chunks with DeBERTa-v3 cross-encoders eliminated context contamination versus top-k dense retrieval baselines.</li>
+          <li><strong>Dynamic Confidence Metric:</strong> Outputted a grounded confidence index evaluating factual completeness, alerting downstream systems when certainty dropped below 85%.</li>
+          <li><strong>Multi-tenant Kubernetes Serving:</strong> Containerized scoring workers orchestrated on VT CS Launch supporting 50+ concurrent evaluation streams via JWT-secured REST APIs.</li>
+        </ul>
+
+        <div class="modal-tags">
+          <span class="tag">LangChain</span>
+          <span class="tag">LLaMA 3.3 70B</span>
+          <span class="tag">DeBERTa-v3</span>
+          <span class="tag">BM25</span>
+          <span class="tag">Sentence-Transformers</span>
+          <span class="tag">FastAPI</span>
+          <span class="tag">Kubernetes</span>
+        </div>
+      `
+    },
+
+    videosum: {
+      title: "flan_t5_gemini_video_summarizer_case_study.md",
+      content: `
+        <h3>FLAN-T5 &amp; Gemini Video Summarizer — Multimodal NLP Platform</h3>
+        <p><strong style="color:var(--green)">📄 Major Capstone Project &amp; Engineering Report</strong> | <a href="Report_major%20Final.pdf" target="_blank" style="color:var(--amber)">Open 73-Page Technical Report (PDF) ↗</a> | FLAN-T5 + Gemini + Whisper</p>
+
+        <h4>Problem: High-Density Technical Lecture Navigation</h4>
+        <p>Technical lectures, research presentations, and engineering symposium videos run 60-120 minutes with no granular chapter timestamps or indexed search. Scrubbing through audio manually wastes valuable study and review hours.</p>
+
+        <h4>Pipeline Architecture</h4>
+        <div class="modal-ascii-box">
+[ Video File Upload ] ──► [ FFmpeg Audio Extraction &amp; Silence Chunking ]
+                                      │
+                                      ▼
+                      [ Parallelized Worker Threadpool ]
+                                      │
+                     [ OpenAI Whisper Speech-to-Text ]
+                                      │
+                                      ▼
+                      [ Topic Segmentation &amp; NLP Parsing ]
+                                      │
+           ┌──────────────────────────┴──────────────────────────┐
+           ▼                                                     ▼
+[ FLAN-T5 Transformer Pipeline ]                       [ Google Gemini API Engine ]
+(Extractive Key-Sentence Ranking)                      (Abstractive Topic Synthesis)
+           │                                                     │
+           └──────────────────────────┬──────────────────────────┘
+                                      ▼
+         [ Interactive React UI: Synced Timestamps &amp; Chapter Graphs ]
+        </div>
+
+        <h4>Key Implementation Highlights</h4>
+        <ul style="padding-left:1.2rem; margin-bottom:1rem;">
+          <li><strong>60% Latency Reduction:</strong> By parallelizing non-overlapping audio chunk transcription across multi-core workers with dynamic silence boundary detection, end-to-end turnaround dropped by over half.</li>
+          <li><strong>FLAN-T5 &amp; Gemini Synthesis:</strong> Benchmarked seq2seq transformer fine-tuning with FLAN-T5 against Gemini multi-stage prompting, evaluating ROUGE-1, ROUGE-2, and ROUGE-L metrics across technical domains.</li>
+          <li><strong>Hierarchical Chapter Summaries:</strong> Designed an NLP summarization pipeline combining extractive key sentence ranking with abstractive section headers, generating structured timestamped study guides.</li>
+          <li><strong>Reactive Video Navigation:</strong> Built custom React timeline components where clicking any concept or bullet point instantly scrubs the video player to the exact millisecond mark.</li>
+        </ul>
+
+        <div class="modal-tags">
+          <span class="tag">FLAN-T5</span>
+          <span class="tag">Google Gemini API</span>
+          <span class="tag">Flask</span>
+          <span class="tag">React</span>
+          <span class="tag">OpenAI Whisper</span>
+          <span class="tag">NLP</span>
+          <span class="tag">FFmpeg</span>
+          <span class="tag">Python</span>
+        </div>
+      `
+    }
+  };
+
+  const modal = document.getElementById('case-study-modal');
+  const modalTitle = document.getElementById('modal-title');
+  const modalBody = document.getElementById('modal-body');
+
+  function openModal(projectId) {
+    const study = caseStudies[projectId];
+    if (!study) return;
+    modalTitle.textContent = study.title;
+    modalBody.innerHTML = study.content;
+    modal.classList.add('active');
+    playClickSound(1000, 'square', 0.05);
+  }
+
+  function closeModal() {
+    modal.classList.remove('active');
+    playClickSound(500, 'sine', 0.04);
+  }
+
+  document.querySelectorAll('.case-study-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openModal(btn.dataset.project);
+    });
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeModal();
+    }
+  });
+
+  /* --- BUTTERY-SMOOTH SCROLL REVEAL OBSERVER --- */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* --- SCROLL SPY ACTIVE NAV (Optimized) --- */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const scrollSpy = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(l => {
+          if (l.getAttribute('href') === '#' + id) {
+            l.style.color = 'var(--green)';
+            l.style.fontWeight = '700';
+          } else {
+            l.style.color = '';
+            l.style.fontWeight = '';
+          }
+        });
+      }
+    });
+  }, { threshold: 0.25 });
+  sections.forEach(s => scrollSpy.observe(s));
+
+  /* --- AJAX FORMSPREE SUBMISSION --- */
+  const form = document.getElementById('contact-form');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('.form-btn');
+      const orig = btn.textContent;
+      btn.textContent = '▸ TRANSMITTING PACKET...';
+      btn.disabled = true;
+      playClickSound(600, 'sine', 0.08);
+
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          btn.textContent = '✓ ACKNOWLEDGED — 200 OK';
+          btn.style.background = 'var(--amber)';
+          form.reset();
+          playClickSound(1400, 'sine', 0.12);
+        } else {
+          btn.textContent = '✕ DISPATCH FAILED — USE DIRECT EMAIL';
+          btn.style.background = 'var(--red)';
+        }
+      } catch {
+        btn.textContent = '✕ DISPATCH FAILED — USE DIRECT EMAIL';
+        btn.style.background = 'var(--red)';
+      }
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 3500);
+    });
+  }
+</script>
+
+</body>
+</html>
